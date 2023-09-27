@@ -1,0 +1,156 @@
+{% if user.is_authenticated and role == 'admin'%}
+{% include 'base1.html'%}
+<!--<!DOCTYPE html>-->
+<html lang="en">
+<head>
+    
+    <title>Onboard Resource</title>
+    <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+  />
+    <title>Onboarding</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+   <style>
+
+        form {
+margin-left:200px;
+}
+.card {
+      margin-left: 700px;
+      margin-top: -675px;
+      border-radius: 20px;
+      background-color: rgba(100, 100, 100, 0.2);
+      backdrop-filter: blur(50px);
+      border: none;
+      
+      border-radius: 30px;
+    }
+    body {
+        background-image: url('https://wallpaperaccess.com/full/1397765.jpg');
+    
+    background-repeat: no-repeat;
+    background-size: cover;
+  /*backdrop-filter: blur(3px);*/
+}
+    </style>
+</head>
+<body>
+
+    <div  style="
+   
+    
+   height:1000px;
+    margin: 0;
+    margin-top: -20px;
+    padding: 0;"
+    
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li style="color: #04ff00fd; list-style-type: none; text-align: center; font-weight: bold; font-size: 20px;" {% if message.tags %}
+            class="{{message.tags}}">
+            {% endif %}
+            {{ message }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div>
+        <div >
+            <br><h4 style="margin-left:200px;color: #ffffff; padding-top: 20px;">Resource Maintainance</h4><br>
+
+
+            <form action = "{% url 'onboard' %}" method="post">
+                {%csrf_token%}
+                <div>
+                    {% for field in form %}
+                    <div>
+                       <label style="color:white; font-family: Times New Roman , Times, serif;font-size:20px; ">{{field.label}} : </label>
+                        <div>{{field}}</div>
+                        <!-- {% if field.label == 'Reset password' %}
+                        <p style="color: #ffffff;">Enter Employee code to Reset Password</p>
+                        {% endif %} -->
+                    </div>
+                    <br>
+                    {% endfor %}
+                </div>
+                <br>
+                <input type="submit" value="Submit" style=" padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background-color: #ff4c29; border-color: #ff4c29" class="btn btn-primary">
+            </form>
+            </div>
+       <br> <div class="card" style="width: 400px; height: 200px;border-color:#04293A ">
+            <div class="card-body">
+    <h4 class="card-title" style="color: #ffffff;text-align:center;font-size:20px; padding: 20px 20px;">Add multiple resource</h4>
+    <p style="color: #ffffff; text-align: center;">Upload an excel file from your device containing data of resources you wish to oboard</p>
+
+    <a href="{% url 'bulk_upload' %}" class="btn btn-primary"style="margin-top: 20px; margin-left: 150px; background-color: #ff4c29; border-color: #ff4c29">Bulk Upload</a>
+  </div>
+
+</div>
+            <br>
+        <br>
+           <!--<div>
+               <p style="font-family: Times New Roman , Times, serif; color: #ECB365;;font-size:20px;text-align :center;">Add new resources from excel file : </p>
+                <button style="padding: 10px 20px;margin-left:500px; background-color: #ECB365; border-radius: 5px;"><a href="{% url 'bulk_upload' %}" style="text-decoration: none; text-align: center;">BULK UPLOAD</a></button>-->
+            <br><br>
+            </div>
+        </div>
+
+
+
+
+
+
+<script>
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        function update_func() {
+        var get_emp_id = document.getElementById('id_EmpCode').value
+        console.log(get_emp_id)
+    $.ajax(
+    {
+        type:"POST",
+        url: 'onboarding-data/',
+        data:{
+               id  : get_emp_id,
+               csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function( data )
+        {
+            console.log(data)
+            var newdata=JSON.parse(data)
+            console.log(newdata['empname'])
+            document.getElementById('id_EmpName').value=newdata['empname']
+            document.getElementById('id_SowRoles').value=newdata['empsowroles']
+            document.getElementById('id_Role').value=newdata['emprole']
+            document.getElementById('id_Location').value=newdata['emplocation']
+            document.getElementById('id_Billed').value=newdata['empbilled']
+            document.getElementById('id_Status').value=newdata['empstatus']
+            document.getElementById('id_Project').value=newdata['empproject']
+        }
+     })
+
+    };
+    document.getElementById('id_EmpCode').onchange=update_func
+</script>
+</body>
+
+{% else %}
+  <script>
+    window.location.href = '/login/'
+  </script>
+{% endif %}
+
+
+</html>

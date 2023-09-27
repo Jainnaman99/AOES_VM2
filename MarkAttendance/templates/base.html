@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+      body {
+        padding: 0px;
+        margin: 0px;
+        box-sizing: border-box;
+      }
+      .navbar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(
+          to bottom,
+          rgba(184, 182, 182, 0.2) 0%,
+          rgba(0, 0, 0, 0) 100%
+        );
+
+        transform: translateY(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+      .navbar.visible {
+        transform: translateY(0);
+      }
+      .navbar ul {
+        display: flex;
+        list-style: none;
+        margin-right: 30px;
+      }
+
+      .navbar ul li {
+        margin: 0px 20px;
+      }
+      .navbar ul li a {
+        text-decoration: none;
+        padding: 5px 10px;
+        color: white;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .navbar ul li a:hover {
+        background-color: #ff4c29;
+        color: rgb(255, 255, 255);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse .navbar-fixed-top visible">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+         <!-- <li><a href="/user_home/">User Home</a></li>-->
+          <button
+            style="
+              background-color: #ff4c29;
+              padding: 6px;
+              border-radius: 5px;
+              margin-left: 1000px;
+              top: 12px;
+              right: 16px;
+              position: absolute;
+              border-color: #ff4c29;
+            "
+          >
+            <a href="/logout/" , style="text-decoration: none; color: white"
+              >Logout</a
+            >
+          </button>
+          {% if reset == False %}
+          <li><a href="/reset_password/">Reset Password</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    <script>
+      document.querySelector(".navbar").classList.remove("visible");
+      setTimeout(() => {
+        document.querySelector(".navbar").classList.add("visible");
+      }, 500);
+            // Disable the back button
+      history.pushState(null, null, location.href);
+      window.onpopstate = function () {
+      history.go(1);
+      };
+    </script>
+  </body>
+</html>

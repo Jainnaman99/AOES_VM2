@@ -1,0 +1,34 @@
+{% if user.is_authenticated and role == 'admin'%}
+{% include 'base1.html'%}
+<!--<!DOCTYPE html>-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary</title>
+</head>
+<body>
+    Attendance for {{user}}
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+        {% for a in att %}
+        <tr>
+            <td>{{a.Date}}</td>
+            <td>{{a.Status}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p>Total days worked : {{sum}}</p>
+</body>
+
+{% else %} 
+  <script>
+    window.location.href = '/login/'
+  </script>
+{% endif %}
+
+</html>

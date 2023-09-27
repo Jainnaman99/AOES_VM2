@@ -1,0 +1,342 @@
+{% if user.is_authenticated and role == 'user'%}{%include 'base.html'%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UACompatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <script>
+      const monthnames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+	const d = new Date()
+	const realmn = d.getMonth()+1
+  // console.log(realmn)
+  console.log(d)
+	const realyr = d.getFullYear()
+      
+      let yr = {{year}}
+      let mn = Number("{{month}}")-1
+      //console.log(mn)
+      var monthName = monthnames[mn]
+
+	// if(mn+1 > realmn || yr > realyr){
+	// 	window.location.href = "../../"+realyr+'/'+realmn
+	// }
+	
+      window.onload = function(){
+        if(mn!=realmn-1 || yr!=realyr){
+          $('.submit_display').remove()
+        }
+
+          const d = new Date()
+          date = d.getDate()
+          if(d.getMonth() == mn && d.getFullYear() == yr){
+              document.getElementById(date).parentElement.style.backgroundColor = '#d7ecff'
+              $('#form').submit(function(e){
+                $.post(`../${mn+1}/`, $(this).serialize());
+                alert("Attendance Updated !");
+                e.preventDefault();
+            });
+          }
+
+          var monthSelect = document.getElementById('mn');
+          
+          var yearSelect = document.getElementById('yr');
+          for(year=2020; year<=realyr; year++){
+            var option = document.createElement('option')
+            option.text = year
+            option.value = year
+            yearSelect.add(option)
+          }
+          console.log(realyr)
+          for (monthName in monthnames){
+              var option = document.createElement('option')
+              option.text = monthnames[monthName]
+              option.value = Number(monthName)+1
+              monthSelect.add(option)
+              if (yr>realyr){
+                pass
+              }
+              else if ((yr) == realyr){
+                if(realmn == Number(monthName)){
+                  break;
+                }
+
+              }
+          }
+
+          $("#mn").val(mn+1)
+          $("#yr").val(yr)
+
+          Url = "../"
+          $("#mn").change(function(){
+                  window.location.href = Url + $(this).val()
+          })
+          $("#yr").change(function(){
+            if($(this).val() <= realyr)
+                  window.location.href = "../../" + $(this).val() + '/' + $("#mn").val()
+          })
+
+
+          const abbs = ["","L", "W", "HL", "H","C"]
+          let lst = {{lst|safe}} //Ignore if error marked, its Django templating syntax
+
+
+
+          for(let i=0; i<lst.length; i++){
+              document.getElementById(i+1).selectedIndex = abbs.indexOf(lst[i])
+          }
+      };
+      Url = "../"
+      function prev(){
+          const prevmonth = Number("{{month}}")-1;
+          window.location.href = Url+prevmonth
+      }
+      function next(){
+          const nextmonth = Number("{{month}}")+1;
+          window.location.href = Url+nextmonth
+      }
+    </script>
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+
+      .Calendar {
+        width: 80%;
+        /* margin-top: -170px !important; */
+        margin: auto;
+      }
+      table {
+        text-align: center;
+      }
+
+      body {
+        background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+        background-size: cover;
+        background-size: cover;
+        height: 100vh;
+        z-index: 1;
+        /*backdrop-filter: blur(10px);
+        background-color: #04293a;*/
+        /*background-image: linear-gradient(
+        rgba(0, 0, 0, 0.75),
+        rgba(0, 0, 0, 0.75)
+      );
+      /* url("https://png.pngtree.com/thumb_back/fh260/background/20201009/pngtree-dark-green-cyan-paper-cut-minimalist-background-for-brochure-poster-banner-image_405384.jpg"); */
+      }
+
+      /* calendar styles */
+      .Calendar {
+        max-width: 1000px;
+        opacity: 1 !important;
+        background-color: rgba(48, 48, 48, 0.8) !important;
+        margin: 0 0;
+        margin-top: 30px;
+        background-color: #fff;
+        box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        padding: 15px;
+        /* height: 650px; */
+        /* position: fixed; */
+      }
+
+      .Calendar h2 {
+        text-align: center;
+        padding: 20px 0;
+        margin: 0;
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .Calendar table {
+        width: 200%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        max-width: 100%;
+        border-radius: 20px;
+        height: 100px;
+      }
+
+      .Calendar td {
+        height: 60px;
+        text-align: center;
+        padding: 5px;
+        border: 2px solid #ccc;
+        vertical-align: top;
+        max-width: 100px;
+      }
+      .Calendar th {
+        height: 30px;
+        text-align: center;
+        padding: 10px;
+        border: 2px solid #ccc;
+        vertical-align: top;
+        max-width: 100px;
+      }
+
+      .Calendar td:hover {
+        background-color: #f2f2f2;
+      }
+
+      .Calendar td.weekend {
+        background-color: #f8f8f8;
+      }
+
+      .Calendar td.current-day {
+        background-color: #d7ecff;
+      }
+
+      .Calendar td.attendance {
+        background-color: #f5f5f5;
+      }
+
+      .Calendar select {
+        padding: 5px 10px;
+        font-size: 16px;
+        font-weight: bold;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .Calendar input[type="submit"] {
+        padding: 5px 10px;
+        background-color: #3f88ff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+      }
+
+      .Calendar input[type="submit"]:hover {
+        background-color: #266dd3;
+      }
+
+      .calendar-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        max-width: 100%;
+        margin-top: 60px;
+      }
+    </style>
+  </head>
+  <body>
+    <div style = "scale:0.8" class="calendar-container">
+      <div class="Calendar">
+        <!-- <div style="display: flex; justify-content: space-between;"> -->
+        <!-- <button class="prev" onclick="prev()"> ← </button> -->
+        <div
+          style="
+            font-size: large;
+            font-family: sans-serif;
+            text-align: left;
+            color: whitesmoke;
+            padding-left: 50px;
+            float: left;
+            font-size: 25px;
+          "
+        >
+          Welcome <span style="font-weight: bold">{{person}}</span>
+        </div>
+        <div style="text-align: center; padding-right: 180px">
+          <select name="yr" id="yr"></select>
+
+          <select name="mn" id="mn"></select>
+        </div>
+        <!-- <button class="next" onclick="next()"> → </button> -->
+        <!-- </div> -->
+        <br />
+        <form method="post" id="form">
+          {% csrf_token %}
+          <table style="border: 2px solid black ;height: 500px;">
+            <colgroup>
+              <col span="5" style="background-color: white" />
+              <col span="2" style="background-color: #3285c9" />
+            </colgroup>
+            <tr >
+              <th>Monday</th>
+              <th>Tuesday</th>
+              <th>Wednesday</th>
+              <th>Thursday</th>
+              <th>Friday</th>
+              <th>Saturday</th>
+              <th>Sunday</th>
+            </tr>
+            {% for rows in cal %}
+            <tr>
+              {% for day in rows %}
+              <td>
+                {% if day != 0 %}
+                <span style="font-weight: bold">{{day}}</span> <br />
+                <!-- <label for="{{day}}">Status:</label> -->
+                <select class="select_attendance" data-day="{{day}}" data-mn="{{month}}" data-yr="{{year}}" name="{{day}}" id="{{day}}">
+                  <option value=""></option>
+                  <option value="L">L</option>
+                  <option value="W">W</option>
+                  <option value="HL">HL</option>
+                  <option value="H">H</option>
+                  <option value="C">C</option>
+                </select>
+                {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </table>
+          <br />
+          <div style="text-align: center">
+            <input
+            class="submit_display"
+              type="submit"
+              value="Submit"
+              style="
+                padding: 10px 30px;
+                background-color: #ff4c29;
+                cursor: pointer;
+                align-items: center;
+              "
+            />
+          </div>
+        </form>
+        <p style="font-weight: bold; text-align: center; color: #fff">
+          L : Leave | W : Working | HL : Half Day | H : Holiday | C :
+          Compensatory Off
+        </p>
+        <br />
+      </div>
+    </div>
+  </body>
+
+  {%else %}
+  <script>
+    window.location.href = "/login/";
+  </script>
+  {% endif %}
+  <script>
+    $(".select_attendance").change(function(){
+
+      let wyear = $(this).data("yr");
+      let wmonth = $(this).data("mn");
+      let wday = $(this).data("day");
+      const dateStr = wyear+'-'+wmonth+'-'+wday;
+      
+      function getDayName(date = new Date(), locale = 'en-US') {
+        return date.toLocaleDateString(locale, {weekday: 'long'});
+      }
+
+      if(getDayName(new Date(dateStr)) == "Saturday" || getDayName(new Date(dateStr)) == "Sunday")
+      {
+      alert("Please leave blank if not working on saturday or sunday!");
+      }
+    })
+  </script>
+</html>

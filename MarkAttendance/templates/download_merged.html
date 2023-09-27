@@ -1,0 +1,50 @@
+{% if user.is_authenticated and role == 'admin'%} {% include 'base1.html'%}
+<!--<!DOCTYPE html>-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TAE Merged</title>
+    <style>
+      button {
+        padding: 5px 10px;
+        background-color: #ff4c29;
+        border: none;
+      }
+
+      body {
+        background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+
+        background-repeat: no-repeat;
+        background-size: cover;
+        backdrop-filter: blur(3px) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="width: 80%; margin: auto">
+      <h1 style="color: whitesmoke">Files merged Successfully !</h1>
+      <br />
+      <p style="color: whitesmoke">
+        You can download the merged TAE Sheet here :
+      </p>
+      <button>
+        <a href="{% url 'downloadTAE' %}" style="color: whitesmoke">Download</a>
+      </button>
+      <br />
+      <!-- <p style="color: whitesmoke">Check TAE Summary here :</p>
+      <button>
+        <a href="{% url 'summaryTAE' %}" style="color: whitesmoke">Summary</a>
+      </button> -->
+    </div>
+  </body>
+
+  {% else %}
+  <script>
+    window.location.href = "/login/";
+  </script>
+  {% endif %}
+</html>
+<!-- "C:\Users\tamal_samanta\Desktop\SG-DjangoExcel\MarkAttendance\media\documents\TAE_Merged.xlsx" -->
+<!--  file:///C:/Users/tamal_samanta/Desktop/SG-DjangoExcel/MarkAttendance/media/documents/TAE_Merged.xlsx -->

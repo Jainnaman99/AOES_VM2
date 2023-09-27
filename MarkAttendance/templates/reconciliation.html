@@ -1,0 +1,150 @@
+{% include 'base1.html'%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reconciliation</title>
+    <script src="    https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    
+    <style>
+      button {
+        margin-left: 1000px;
+        margin-bottom: 600px;
+      }
+      body {
+        background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+
+        background-repeat: no-repeat;
+        background-size: cover;
+
+      }
+.table {
+padding: 20px;
+}
+
+
+table {
+border-collapse: collapse;
+width: 100%;
+max-width: 100%;
+overflow-x: auto;
+
+white-space: nowrap;
+}
+th, td {
+padding: 0.5rem;
+border: 1px solid #ddd;
+text-align: left;
+}
+th {
+background-color: #f2f2f2;
+font-weight: bold;
+}
+
+
+th {
+background-color: #f2f2f2;
+font-weight: bold;
+}
+tr {
+border-bottom: 1px solid #ddd;
+}
+
+
+
+
+
+
+
+    </style>
+  </head>
+  <body>
+    
+  <div class="table">
+    <div class="date-select" style="text-align: center; height: 10vh; display: block;">
+
+    <select name="year" id="year">
+      <option value="2022">2022</option>
+      <option value="2023">2023</option>
+    </select>
+    <select name="month" id="month">
+      <option value="1">January</option>
+      <option value="2">February</option>
+      <option value="3">March</option>
+      <option value="4">April</option>
+      <option value="5">May</option>
+      <option value="6">June</option>
+      <option value="7">July</option>
+      <option value="8">August</option>
+      <option value="9">September</option>
+      <option value="10">October</option>
+      <option value="11">November</option>
+      <option value="12">December</option>
+    </select>
+    <button id="check" style=" padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background-color: #ff4c29; border-color: #ff4c29" class="btn btn-primary">Check</button>
+  </div>  
+    <table border="1px solid white;" style=" width:50% " align="center">
+      <thead border="1px solid white;">
+        <th style="color:black">User Name</th>
+        <th style="color:black">Time Entry</th>
+        <th style="color:black">Time Entry - (Working)</th>
+        <th style="color:black">Time Entry - (Leaves)</th>
+        <th style="color:black">TAE</th>
+        <th style="color:black">TAE - (Working)</th>
+        <th style="color:black">TAE - (Leaves)</th>
+      </thead>
+      <tbody style="color: white;">
+        {% for key,value in reatt.items %}
+        <tr
+          {% if value != retae|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% elif reatt_working|get_item:key != retae_working|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% elif reatt_leaves|get_item:key != retae_leaves|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% endif %}
+        >
+        <!-- <tr
+          {% if value != retae|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% endif %}
+        > -->
+          <td>{{key}}</td>
+          <td>{{value}}</td>
+          <td>{{reatt_working|get_item:key}}</td>
+          <td>{{reatt_leaves|get_item:key}}</td>
+          <td>{{retae|get_item:key}}</td>
+          <td>{{retae_working|get_item:key}}</td>
+          <td>{{retae_leaves|get_item:key}}</td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+    <!--<button
+      style="
+        background-color: rgb(255, 172, 172);
+        padding: 7px;
+        border-radius: 5px;
+        margin-right: 30px;
+      "
+    >
+      <a href="/logout/" style="text-decoration: none">Logout</a>-
+    </button>-->
+    <script>
+      let yr = {{year}}
+      let mn = Number("{{month}}")
+      $("#year").val(yr)
+      $("#month").val(mn)
+      $("#check").click(function(){
+        let yr = $("#year").val()
+        let mn = $("#month").val()
+        window.location.href = "{% url 'reconTAE' year=9999 month=99 %}".replace("9999",yr).replace("99",mn)
+      })
+    </script>
+  </body>
+</html>

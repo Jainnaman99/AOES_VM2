@@ -1,0 +1,7 @@
+/.DS_Store
+/.idea
+/venv
+/Markattendance/db.sqlite3
+Markattendance/db.sqlite3
+MarkAttendance/media/*.xlsx
+MarkAttendance/media/TimeReport.xlsx

@@ -1,0 +1,292 @@
+{% if user.is_authenticated and role == 'admin'%}{%include 'base1.html'%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UACompatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <script>
+      window.onload = function() {
+          $('#form').submit(function(e){
+              $.post(`./save/`, $(this).serialize());
+              alert("Attendance Updated !");
+              e.preventDefault();
+          });
+  
+          $('#month').val({{month|safe}})
+          $('#year').val({{year}})
+          $('#empid').val("{{emp}}")
+ 
+          const abbs = ["","L", "W", "HL", "H","C"]
+          let lst = {{ls|safe}} //Ignore if error marked, its Django templating syntax
+          // let enames = {{ename|safe}}
+          
+          // console.log({{empfinal|safe}})
+          for(let i=0; i<lst.length; i++){
+              document.getElementById(i+1).selectedIndex = abbs.indexOf(lst[i])
+          }
+      }
+</script>
+<style>
+    * {
+      font-family: sans-serif;
+    }
+
+    .Calendar {
+      width: 80%;
+      /* margin-top: -170px !important; */
+      margin: auto;
+    }
+    table {
+      text-align: center;
+    }
+
+    body {
+      background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+      background-size: cover;
+      background-size: cover;
+      height: 100vh;
+      z-index: 1;
+      /*backdrop-filter: blur(10px);
+      background-color: #04293a;*/
+      /*background-image: linear-gradient(
+      rgba(0, 0, 0, 0.75),
+      rgba(0, 0, 0, 0.75)
+    );
+    /* url("https://png.pngtree.com/thumb_back/fh260/background/20201009/pngtree-dark-green-cyan-paper-cut-minimalist-background-for-brochure-poster-banner-image_405384.jpg"); */
+    }
+
+    /* calendar styles */
+    .Calendar {
+      max-width: 1000px;
+      opacity: 1 !important;
+      background-color: rgba(48, 48, 48, 0.8) !important;
+      margin: 0 0;
+      background-color: #fff;
+      box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      padding: 15px;
+      /* height: 650px; */
+      /* position: fixed; */
+    }
+
+    .Calendar h2 {
+      text-align: center;
+      padding: 20px 0;
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .Calendar table {
+      width: 200%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      max-width: 100%;
+      border-radius: 20px;
+      height: 100px;
+    }
+
+    .Calendar td {
+      height: 60px;
+      text-align: center;
+      padding: 5px;
+      border: 2px solid #ccc;
+      vertical-align: top;
+      max-width: 100px;
+    }
+    .Calendar th {
+      height: 30px;
+      text-align: center;
+      padding: 10px;
+      border: 2px solid #ccc;
+      vertical-align: top;
+      max-width: 100px;
+    }
+
+    .Calendar td:hover {
+      background-color: #f2f2f2;
+    }
+
+    .Calendar td.weekend {
+      background-color: #f8f8f8;
+    }
+
+    .Calendar td.current-day {
+      background-color: #d7ecff;
+    }
+
+    .Calendar td.attendance {
+      background-color: #f5f5f5;
+    }
+
+    .Calendar select {
+      padding: 5px 10px;
+      font-size: 16px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .Calendar input[type="submit"] {
+      padding: 5px 10px;
+      background-color: #3f88ff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .Calendar input[type="submit"]:hover {
+      background-color: #266dd3;
+    }
+
+    .calendar-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      max-width: 100%;
+    }
+
+    .selection-form {
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .selection-form > input {
+      outline: none;
+      border: none;
+      border-radius: 5px;
+      margin: 0 10px;
+      height: 30px;
+    }
+
+    .selection-form > select {
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+    <div class="master-selection">
+        <form method="post" class="selection-form">
+            {% csrf_token %}
+            <select name="empid" id="empid" required >
+              <option value="">Employee Id</option>
+              {% for i in empfinal%}
+              <option value="{{i}}" id="empidoption">{{i}}</option>
+              {%endfor%}
+            </select>
+            <select name="month" id="month" required>
+              <option value="">Month</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <select name="year" id="year" required>
+              <option value="">Year</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+            </select>
+            <input type="submit" value="Check" class="check-button"
+            style="
+              background-color: #6da7ff;
+              color: white;
+            ">
+        </form>
+    </div>
+  <div style = "scale:0.7" class="calendar-container">
+    <div class="Calendar">
+      <!-- <div style="display: flex; justify-content: space-between;"> -->
+      <!-- <button class="prev" onclick="prev()"> ← </button> -->
+      <!-- <button class="next" onclick="next()"> → </button> -->
+      <!-- </div> -->
+      <form method="post" id="form">
+        {% csrf_token %}
+        <input type="hidden" name="empidsave" value={{empid}}>
+        <input type="hidden" name="monthsave" value={{month}}>
+        <input type="hidden" name="yearsave" value={{year}}>
+        <table style="border: 2px solid black ;height: 500px;">
+          <colgroup>
+            <col span="5" style="background-color: white" />
+            <col span="2" style="background-color: #ececec" />
+          </colgroup>
+          <tr >
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+            <th>Sunday</th>
+          </tr>
+          {% for rows in cal %}
+          <tr>
+            {% for day in rows %}
+            <td>
+              {% if day != 0 %}
+              <span style="font-weight: bold">{{day}}</span> <br />
+              <!-- <label for="{{day}}">Status:</label> -->
+              <select name="{{day}}" id="{{day}}">
+                <option value=""></option>
+                <option value="L">L</option>
+                <option value="W">W</option>
+                <option value="HL">HL</option>
+                <option value="H">H</option>
+                <option value="C">C</option>
+              </select>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </table>
+        <br />
+        <div style="text-align: center">
+          <input
+            type="submit"
+            value="Update"
+            style="
+              padding: 10px 30px;
+              background-color: #ff4c29;
+              cursor: pointer;
+              align-items: center;
+            "
+          />
+        </div>
+      </form>
+      <p style="font-weight: bold; text-align: center; color: #fff; margin-top: 20px;">
+        L : Leave | W : Working | HL : Half Day | H : Holiday | C :
+        Compensatory Off
+      </p>
+      <br />
+    </div>
+  </div>
+</body>
+
+{%else %}
+<script>
+  window.location.href = "/login/";
+</script>
+{% endif %}
+</html>

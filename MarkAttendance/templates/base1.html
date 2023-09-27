@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
+    <style>
+      .navbar .login-btn {
+        position: absolute;
+
+        top: 12px;
+
+        right: 16px;
+
+        background-color: #ff4c29;
+      }
+
+      .navbar {
+        border-radius: 0 !important;
+
+        opacity: 0;
+
+        transform: translateY(-50px);
+
+        transition: all 0.5s ease-in-out;
+      }
+
+      .navbar.show {
+        opacity: 1;
+
+        transform: translateY(0);
+      }
+
+      .navbar {
+        min-height: 80px !important;
+
+        box-shadow: 0 15px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .navbar {
+        width: 100%;
+
+        z-index: 9999;
+
+        background-color: rgba(11, 11, 11, 0.5) !important;
+
+        background-image: linear-gradient(
+          to bottom,
+
+          rgba(184, 182, 182, 0.2) 0%,
+
+          rgba(255, 255, 255, 0) 100%
+        );
+
+        border: none;
+
+        box-shadow: none;
+      }
+
+      @media (min-width: 768px) {
+        .navbar-nav > li > a {
+          /* (80px - line-height of 27px) / 2 = 26.5px */
+
+          padding-top: 26.5px !important;
+
+          padding-bottom: 26.5px !important;
+
+          line-height: 27px !important;
+
+          color: white !important;
+
+          font-size: 19px;
+
+          font-family: Times New Roman, Times, serif;
+
+          font-weight: bold;
+
+          border-radius: 0px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse .navbar-fixed-top">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+          <li><a href="/admin_home/">PMO Home</a></li>
+
+          <li><a href="/onboarding/">Resource Onboard</a></li>
+
+          <li><a href="/admincalendar/">Update Calendar</a></li>
+
+          <li><a href="{% url 'multiTAE' %}">TAE Sheet Upload</a></li>
+
+          <li><a href="#" onclick="btnClick()">TAE Reconciliation</a></li>
+
+          <li><a href="{% url 'multiTAE' %}">Projections</a></li>
+
+          <li><a href="{% url 'reset_pwd' %}">Reset Password</a></li>
+
+          <a href="/logout/"
+            ><button class="btn btn-lg btn-danger navbar-btn login-btn">
+              Logout
+            </button></a
+          >
+        </ul>
+      </div>
+    </nav>
+
+    <script>
+      $(document).ready(function () {
+        $(".navbar").addClass("show");
+      });
+
+      function btnClick() {
+        const d = new Date();
+
+        mn = d.getMonth() + 1;
+
+        yr = d.getFullYear();
+
+        console.log(yr, mn);
+
+        url = "{% url 'reconTAE' year=9999 month=99 %}"
+          .replace("9999", String(yr))
+          .replace("99", String(mn));
+
+        window.location.href = url;
+      }
+      // Disable the back button
+      history.pushState(null, null, location.href);
+      window.onpopstate = function () {
+      history.go(1);
+      };
+    </script>
+  </body>
+</html>

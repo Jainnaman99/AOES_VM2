@@ -1,0 +1,95 @@
+
+{% if user.is_authenticated and role == 'admin'%}
+{% include 'base1.html'%}
+<!--<!DOCTYPE html>-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Upload</title>
+  <style>
+    body {
+      background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+      background-size: cover;
+      backdrop-filter: blur(3px);
+      background-color: #04293a;
+      /*background-image: linear-gradient(
+        rgba(0, 0, 0, 0.75),
+        rgba(0, 0, 0, 0.75)
+      );
+      /* url("https://png.pngtree.com/thumb_back/fh260/background/20201009/pngtree-dark-green-cyan-paper-cut-minimalist-background-for-brochure-poster-banner-image_405384.jpg"); */
+    }
+    .navbar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        box-shadow: 0px 2px 2px grey;
+        justify-content: space-between;
+        }
+
+        .navbar ul {
+        display: flex;
+        list-style: none;
+        margin-right: 30px;
+        }
+
+        .navbar ul li {
+        margin: 0px 20px;
+        }
+        .navbar ul li a {
+        text-decoration: none;
+        padding: 5px 10px;
+        color: black;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        }
+        .navbar ul li a:hover {
+        background-color: grey;
+        color: black;
+        }
+  </style>
+</head>
+<body>
+ <!-- <div class="navbar">
+    <div>
+        <ul>
+            <li><a href="/admin_home/">Admin Home</a></li>
+          </ul>
+    </div>
+        <button style="background-color: rgb(255, 172, 172); padding: 7px; border-radius: 5px; margin-right: 30px;"><a href="/logout/" style="text-decoration: none;">Logout</a></button> 
+    </div>-->
+<div style="width: 500px; margin: auto; text-align: center;">
+  <h1 style="color:white;">Bulk Upload Resources : </h1>
+{% if messages %}
+  {% if color == "1" %} 
+    <ul class="messages">
+        {% for message in messages %}
+        <p{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: rgb(5, 250, 5); font-size: 15px;">{{ message }}</p>
+        {% endfor %}
+    </ul>
+  {% else %}
+    <ul class="messages">
+        {% for message in messages %}
+        <p{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: rgb(189, 8, 8);font-size: 15px;">{{ message }}</p>
+        {% endfor %}
+    </ul>
+  {% endif %}
+{% endif %}
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="ExcelData">
+    <button type="submit">Upload</button><br>
+    <p style="color:white;">Please upload the xlsx File</p>
+  </form>
+</div>
+</body>
+
+{% else %} 
+  <script>
+    window.location.href = '/login/'
+  </script>
+{% endif %}
+
+</html>
