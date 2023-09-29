@@ -123,63 +123,100 @@ def admin_home(request):
             data['role'] = 'admin'
         else:
             data['role'] = 'user'
-
+        project_name="All"
+        session="reload"
         # mn = datetime.date.today().month
         if request.method == 'POST':
-            mn = request.POST.get('month')
-            yr = request.POST.get('year')
-            if(mn == None):
+            session="no_reload"
+            mn = request.POST.get('month_')
+            yr = request.POST.get('year_')
+            project_name = request.POST.get('project_name_')
+            # print(mn)
+            # print(yr)
+            # print(project_name)
+            print(str(request.POST))
+            if ((mn == None) and request.POST.get('monthn') != None):
                 mn = request.POST['monthn']
                 yr = request.POST['yearn']
+                project_name = request.POST['project_namen']
+                # print(str(request.POST)+"next")
+            elif ((mn == None) and request.POST.get('month') != None):
+                mn = request.POST['month']
+                yr = request.POST['year']
+                project_name = request.POST['project_namep']
+                # print(str(request.POST))
             mn = int(mn)
             yr = int(yr)
+            # print(request.POST)
+
+
+            # print(emp_project_name)
+            # if 'project-name' not in request.POST:
+            #     return redirect('admin_home')
+            # elif 'project-name'=='JOSYS':
+            #     print("JOSYS")
         else:
             mn = datetime.date.today().month
             yr = datetime.date.today().year
-        week = ["Mon","Tue","Wed","Thu","Fri", "Sat","Sun"]
-        weekstart = monthrange(yr,mn)[0]
-        numdays = monthrange(yr,mn)[1]
+        
+        week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        weekstart = monthrange(yr, mn)[0]
+        numdays = monthrange(yr, mn)[1]
         weekdays = [str(month_name[mn])+str(yr)]
-        while numdays>0:
+        while numdays > 0:
             weekdays.append(week[weekstart])
-            weekstart+=1
-            if(weekstart > 6):
+            weekstart += 1
+            if (weekstart > 6):
                 weekstart = 0
-            numdays-=1
+            numdays -= 1
         weekdays.append(" ")
-        numdays = monthrange(yr,mn)[1]
-        days = [x for x in range(1,numdays+1)]
+        numdays = monthrange(yr, mn)[1]
+        days = [x for x in range(1, numdays+1)]
         header = []
         header.append("User")
         header.extend(days)
         header.append("Workday")
+        # header.append("Project")
         head = []
+        
         head.append(weekdays)
         head.append(header)
-
+        # print(head)
         calendar = []
         row = []
+        projects=["JOSYS", "SG:SFDF"]
         working_count = 0
 
-        for es in Resource.objects.raw(f'select distinct id, EmpCode from Onboarding_resource where Status = "Active" group by EmpCode order by EmpName'):
-            for emp in Resource.objects.filter(EmpCode = es.EmpCode):
+        if project_name == "All":
+            query = f'select distinct id, EmpCode, Project from Onboarding_resource where Status = "Active" group by EmpCode order by Project ,EmpName'
+
+        else :
+            query = f'select distinct id, EmpCode, Project from Onboarding_resource where Status = "Active" and Project ="{project_name}" group by EmpCode order by Project ,EmpName'
+
+        for es in Resource.objects.raw(query):
+            for emp in Resource.objects.filter(EmpCode=es.EmpCode):
                 row.append(emp.EmpName)
             for dt in Attendance.objects.raw(f'select id, Date, Status from TimeEntry_attendance where EmpCode = {es.EmpCode} and Date like "%{mn}-{yr}%" order by strftime(date,Date) asc'):
                 row.append(dt.Status)
-                if(dt.Status == "W"):
+                if (dt.Status == "W" or dt.Status == "C"):
                     working_count += 1
-                elif(dt.Status == "HL"):
+                elif (dt.Status == "HL"):
                     working_count += 0.5
-            if(working_count>20):
+            if (working_count > 20):
                 working_count = 20
-            if(len(row) == 1):
-                for i in range(0,numdays):
+            if (len(row) == 1):
+                for i in range(0, numdays):
                     row.append('-')
             row.append(working_count)
+            # for emp_project in Resource.objects.filter(EmpCode=es.EmpCode):
+                # print(emp_project.Project)
+                # if emp_project.Project not in projects:
+                #     projects.append(emp_project.Project)
+                # row.append(emp_project.Project)
             calendar.append(row)
             row = []
             working_count = 0
-            
+        # print(projects)
         array = []
         array.append(head[0])
         array.append(head[1])
@@ -192,7 +229,7 @@ def admin_home(request):
         result.to_excel(filepath+'TimeReport.xlsx', index=False, header=False)
         downloadFile = filepath+'TimeReport.xlsx'
 
-        return render(request, 'admin_home.html', {'role': data['role'], 'header': head, 'month_name': month_name[mn], 'mn': mn, 'yr':yr, 'calendar':calendar, 'df':downloadFile})
+        return render(request, 'admin_home.html', {'role': data['role'], 'header': head, 'month_name': month_name[mn], 'mn': mn, 'yr': yr, 'calendar': calendar, 'df': downloadFile, 'projects':projects, 'session':session})
     else:
         return redirect('login')
 
