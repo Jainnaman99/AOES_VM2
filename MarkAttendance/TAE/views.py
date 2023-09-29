@@ -102,15 +102,69 @@ def upload_multiple(request):
         form = TAEUploadMultiForm()
     return render(request, 'MultiTAE.html', {'form':form,'role':"user" if(request.user.appusers.roles.filter(name="User").exists()) else "admin"})
 
+
 @auth_middleware
 @never_cache
 def deleteTAE(request):
-    files = TAESheet.objects.all()
-    for file in files:
-        file.docfile.delete()
-        file.delete()
-    
-    return HttpResponse("Files removed successfully")
+    # files = TAESheet.objects.all()
+    # for file in files:
+    #     file.docfile.delete()
+    #     file.delete()
+
+    # return HttpResponse("Files removed successfully")
+    if (request.user.is_authenticated):
+        appuser = request.user.appusers
+        if (appuser.roles.filter(name="Admin").exists()):
+            role = 'admin'
+        else:
+            role = 'user'
+    emplist_code = []
+    emplist_name = []
+    employees_final_list = []
+    for es in Resource.objects.raw(f'select distinct id, EmpCode from Onboarding_resource where Status = "Active" group by EmpCode order by EmpName'):
+        for emp in Resource.objects.filter(EmpCode=es.EmpCode):
+            emplist_name.append(emp.EmpName)
+            emplist_code.append(emp.EmpCode)
+            employees_final_list.append(
+                str(emp.EmpName) + "-" + str(emp.EmpCode))
+
+    # print(emplist_name)
+    # print(emplist_code)
+    # print(employees_final_list)
+    if (request.method == 'POST'):
+        if 'empid'not in request.POST:
+            return redirect('delete_TAE')
+        else:
+            emp = request.POST['empid']
+            new_emp = emp.split("-")
+            # print(new_emp)
+            emp1 = (new_emp[0])
+            month = str(request.POST['month'])
+            month = month.zfill(2)
+            year = int(request.POST['year'])
+            print(emp1,month,year)
+            # print(request.POST.get('calendar_save'))
+            try:
+                # selection = MasterTAE.objects.raw(f"select * from TAE_mastertae where User_Name='{emp1}' and Date like '%{year}-{month}%'")
+                # print(selection)
+                with connection.cursor() as cursor:
+                    cursor.execute(f"delete from TAE_mastertae where User_Name='{emp1}' and Date like '%{year}-{month}%'")
+                    print("deleted")
+                    # if(e != None):
+                    #     obj=MasterTAE.objects.filter(e)
+                    #     obj.delete()
+                    # else:
+                    #     print("No more TAE entries")
+                    
+                # MasterTAE.objects.filter(User_Name=emp1, Date like )
+                # print(count)
+                return render(request, 'delete_TAE.html', {'role': role, 'month': month, 'year': year, 'emp': emp, 'ename': emplist_name, 'ecode': emplist_code, 'empfinal': employees_final_list})
+            except:
+                print("In Except Block")
+                return render(request, 'delete_TAE.html', {'role': role,  'month': month, 'year': year, 'emp': emp, 'ename': emplist_name, 'ecode': emplist_code, 'empfinal': employees_final_list})
+                
+    return render(request, 'delete_TAE.html', {'role': role, 'ename': emplist_name, 'ecode': emplist_code, 'empfinal': employees_final_list})
+
 
 
 def downloadTAE(request):
