@@ -17,6 +17,7 @@ from django.views.decorators.cache import cache_control
 from .forms import TAEUploadMultiForm
 from django.template.defaulttags import register
 from django.views.decorators.cache import never_cache
+from django.db import connection
 
 @register.filter
 def get_item(dictionary, key):
