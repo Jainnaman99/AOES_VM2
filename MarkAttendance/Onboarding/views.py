@@ -205,11 +205,11 @@ def reset_pwd(request):
         updated = False
         if form.is_valid():
             form.save(commit=False)
-            print(form.data)
+            # print(form.data)
             # print(Resource.objects.filter(EmpCode = form.data['EmpCode']))
             if len(Resource.objects.filter(EmpCode = (form.data['EmpCode']))) != 0:
             # if (Resource.objects.filter(EmpCode = form.data['EmpCode'])):
-                print("If")
+                # print("If")
                 form.save(commit=False)
                 reset_password = 'Per@1234'
                 EmpCode = form.data['EmpCode']
@@ -217,23 +217,18 @@ def reset_pwd(request):
                 user.set_password(reset_password)
                 user.save()
                 appuser = ApplicationUser.objects.get(user= user)
-                print(appuser.reset)
+                # print(appuser.reset)
                 appuser.reset = False
                 appuser.save()
                 reset_password = 0
                 updated = True
-                messages.success(request,'Password reset successfully')
-             
+                  
             else:
-                # form.save()
-                # print("Else")
-                messages.error(request,'User Does Not Exist')
-                return render(request, 'reset_pwd.html', {'form' : form, 'updated':updated, 'role':"user" if(request.user.appusers.roles.filter(name="User").exists()) else "admin"})
-            # if updated:
-            #     messages.success(request,'Password reset successfully')
-            # else:
-            #     messages.success(request,'User Not Exist')
-        
+                form.save()
+            if updated:
+                messages.success(request,'Password reset successfully')
+            else:
+                messages.success(request,'User Not Exist')
                 
     else :  
         form = ResetForm()
