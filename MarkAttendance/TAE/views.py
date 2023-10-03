@@ -39,6 +39,7 @@ def TAEUpload(request):
 
 @auth_middleware
 def upload_multiple(request):
+
     if request.method == "POST":
         try:
             form = TAEUploadMultiForm(request.POST, request.FILES)
@@ -46,17 +47,14 @@ def upload_multiple(request):
             # print(docfiles)
             if form.is_valid():
                 for f in docfiles:
-                        newdoc = TAESheet(docfile=f)
-                        if not f.name.endswith('xlsx'):
-                            # print("inside EXCELDATA ends with xlsx")
-                            return render(request, 'MultiTAE.html', {'isValid': False, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
-                        newdoc.save()
-                # for f in docfiles:
-                #     newdoc = TAESheet(docfile = f)
-                #     newdoc.save()
+                    newdoc = TAESheet(docfile=f)
+                    if not f.name.endswith('xlsx'):
+                        # print("inside EXCELDATA ends with xlsx")
+                        return render(request, 'MultiTAE.html', {'isValid': False, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
+                    newdoc.save()
                 # context = {'msg' : '<span style="color: green;">File successfully uploaded</span>'}
                 # return render(request, "MultiTAE.html", context)
-    #=====================================================================================================
+    # =====================================================================================================
                 path = str(base_dir) + "/media/documents/TAE"
                 file_list = glob.glob(path+"/*.xlsx")
 
@@ -70,38 +68,72 @@ def upload_multiple(request):
                 # for excl_file in excl_list:
                 #     excl_merged = excl_merged.append(excl_file, ignore_index=True)
                 excl_merged = pd.concat(excl_list, ignore_index=True)
-                
-                excl_merged.to_excel(str(base_dir)+"/media/TAE_Merged.xlsx", index=False)
+
+                excl_merged.to_excel(
+                    str(base_dir)+"/media/TAE_Merged.xlsx", index=False)
                 masterTAE = open(str(base_dir)+"/media/TAE_Merged.xlsx", 'rb')
                 empexceldata = pd.read_excel(masterTAE)
                 dbframe = empexceldata
+
                 for dbframe in dbframe.itertuples():
-                    print(dbframe)
+                    # print(dbframe)
+                    # if MasterTAE.objects.filter(User_Name=dbframe._1, Date=dbframe.Date):
+                    #     if MasterTAE.objects.filter(User_Name=dbframe._1, Date=dbframe.Date, Activity=dbframe.Activity):
+                    #         obj = MasterTAE.objects.filter(User_Name=dbframe._1, Date=dbframe.Date)
+                    #     # print(obj)
+                    #     # print("Deleted !")
+                    #         obj.delete()
+                        
+
                     if not MasterTAE.objects.filter(User_Name=dbframe._1, Date=dbframe.Date, Activity=dbframe.Activity):
-                        obj = MasterTAE.objects.create(User_Name=dbframe._1,Location=dbframe.Location, Date=dbframe.Date,
-                                                    Project=dbframe.Project, Project_Task=dbframe._5, Activity=dbframe.Activity, 
-                                                    Role=dbframe.Role, Internal_Note=dbframe._8, Bill_Rate=dbframe._9,Bill_Hrs=dbframe._10,
-                                                    NB_Hrs=dbframe._11, Total_Hrs=dbframe._12, Revenue_Reason=dbframe._13)           
+                        obj = MasterTAE.objects.create(User_Name=dbframe._1, Location=dbframe.Location, Date=dbframe.Date,
+                                                        Project=dbframe.Project, Project_Task=dbframe._5, Activity=dbframe.Activity,
+                                                        Role=dbframe.Role, Internal_Note=dbframe._8, Bill_Rate=dbframe._9, Bill_Hrs=dbframe._10,
+                                                        NB_Hrs=dbframe._11, Total_Hrs=dbframe._12, Revenue_Reason=dbframe._13)
+                        # print("Saved !")
                         obj.save()
+                    # if MasterTAE.objects.filter(User_Name=dbframe._1, Date=dbframe.Date, Activity=dbframe.Activity):
+                    #     obj = MasterTAE.objects.filter(User_Name=dbframe._1, Location=dbframe.Location, Activity=dbframe.Activity)
+                    #     # print(obj)
+                    #     obj.delete()
+                        # print("Deleted!")
+                        # if MasterTAE.objects.filter(User_Name=dbframe._1, Date=dbframe.Date):
+                            # obj=MasterTAE.objects.filter(User_Name=dbframe._1, Date=dbframe.Date)
+                            # print(obj)
+                            # obj = MasterTAE.objects.get(User_Name=dbframe._1, Location=dbframe.Location, Date=dbframe.Date,
+                            #                             Project=dbframe.Project, Project_Task=dbframe._5, Activity=dbframe.Activity,
+                            #                             Role=dbframe.Role, Internal_Note=dbframe._8, Bill_Rate=dbframe._9, Bill_Hrs=dbframe._10,
+                            #                             NB_Hrs=dbframe._11, Total_Hrs=dbframe._12, Revenue_Reason=dbframe._13)
+                            # obj.delete()
+
+                        # else:
+                        #     obj = MasterTAE.objects.create(User_Name=dbframe._1, Location=dbframe.Location, Date=dbframe.Date,
+                        #                                 Project=dbframe.Project, Project_Task=dbframe._5, Activity=dbframe.Activity,
+                        #                                 Role=dbframe.Role, Internal_Note=dbframe._8, Bill_Rate=dbframe._9, Bill_Hrs=dbframe._10,
+                        #                                 NB_Hrs=dbframe._11, Total_Hrs=dbframe._12, Revenue_Reason=dbframe._13)
+                        #     obj.save()
+
                 downloadfile = str(base_dir)+"/media/TAE_Merged.xlsx"
 
-                #deleting residue files
+                # deleting residue files
 
                 files = TAESheet.objects.all()
                 for file in files:
                     file.docfile.delete()
                     file.delete()
-    #======================================================================================================
-                return render(request, "download_merged.html", {'file' : downloadfile,'role':"user" if(request.user.appusers.roles.filter(name="User").exists()) else "admin"})
+    # ======================================================================================================
+                return render(request, "download_merged.html", {'file': downloadfile, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
             else:
                 return render(request, 'MultiTAE.html', {'isValid': False, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
         except Exception as e :
+            # print("In except block",e)
+            # template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            # print(template.format(type(e).__name__, e.args))
             return render(request, 'MultiTAE.html', {'isValid': False, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
-            
+
     else:
         form = TAEUploadMultiForm()
-    return render(request, 'MultiTAE.html', {'form':form,'role':"user" if(request.user.appusers.roles.filter(name="User").exists()) else "admin"})
-
+    return render(request, 'MultiTAE.html', {'form': form, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
 
 @auth_middleware
 @never_cache
@@ -220,8 +252,8 @@ def reconTAE(request, year, month):
         for r in res:
             user_name = tae.User_Name
             total_hrs = tae.Total_Sum
-            user_name = user_name.split(", ")
-            user_name = user_name[1] + ' ' + user_name[0]
+            # user_name = user_name.split(", ")
+            # user_name = user_name[1] + ' ' + user_name[0]
             if r.EmpName == user_name:
                 th = int(total_hrs/8)
                 retae_working[user_name] = th
