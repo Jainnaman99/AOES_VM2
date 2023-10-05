@@ -123,7 +123,7 @@ def admin_home(request):
             data['role'] = 'admin'
         else:
             data['role'] = 'user'
-        project_name="All"
+        project_name="JOSYS"
         session="reload"
         # mn = datetime.date.today().month
         if request.method == 'POST':
@@ -202,8 +202,12 @@ def admin_home(request):
                     working_count += 1
                 elif (dt.Status == "HL"):
                     working_count += 0.5
-            if (working_count > 20):
-                working_count = 20
+            if (project_name == "JOSYS"):
+                max_capping = 21
+            else :
+                max_capping = 20
+            if (working_count > max_capping):
+                working_count = max_capping
             if (len(row) == 1):
                 for i in range(0, numdays):
                     row.append('-')

@@ -97,7 +97,7 @@
       session = ('{{session}}')
       // alert(session)
       if(session == "reload"){
-        project_name=$('#option_1').val()
+        project_name="JOSYS"
         sessionStorage.setItem("project_name",project_name  )
       }
       project_save = sessionStorage.getItem("project_name")
@@ -183,7 +183,7 @@
           <input type="hidden" name="year_" id="year_">
           <input type="hidden" name="project_name_" id="project_name_">
           <select name="project_name" id="project_name" required >
-            <option value="All" id="option_1">All Projects</option>
+            <!-- <option value="All" id="option_1">All Projects</option> -->
             {% for i in projects %}
             <option value="{{i}}" id="projectnameoption">{{i}}</option>
             {%endfor%}
