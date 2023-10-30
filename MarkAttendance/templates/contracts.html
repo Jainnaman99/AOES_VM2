@@ -1,0 +1,257 @@
+{% include 'base1.html'%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contracts</title>
+    <script src="    https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <style>
+      body {
+        background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      .table {
+        padding: 10px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      th,
+      td {
+        padding: 0.8rem;
+        padding-right: 2.2rem;
+        border: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        border-left: 1px solid #000000;
+        border-right: 1px solid #000000;
+      }
+
+      tr {
+        border-bottom: 1px solid #ddd;
+        color: whitesmoke;
+        background-color: #666;
+      }
+
+      td {
+        /*white-space: normal;*/
+        max-width: 500px;
+        /* word-break: break-word; */
+      }
+
+      #addContract,
+      #editContract {
+        width: 150px;
+        margin-bottom: 20px;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 20px;
+        text-align: center;
+        display: block;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="table">
+      <div class="button-container">
+        <button
+          id="addContract"
+          style="background-color: #ff4c29; border-color: #ff4c29"
+          class="btn btn-primary"
+        >
+          Add Contract
+        </button>
+
+        <button
+          id="editContract"
+          style="background-color: #ff4c29; border-color: #ff4c29"
+          class="btn btn-primary"
+        >
+          Edit Contract
+        </button>
+      </div>
+      <!-- </div> -->
+
+      <table border="1px solid white;" style="width: 50%" align="center">
+        <thead border="1px solid white;">
+          <th style="color: black">Contract Name</th>
+          <th style="color: black"> Contract Acronym </th>
+          <th style="color: black">Contract Type</th>
+          <th style="color: black">FTE Count</th>
+          <th style="color: black">
+            Total Contract <br />
+            Value
+          </th>
+          <th style="color: black">Start Date</th>
+          <th style="color: black">End Date</th>
+          <th style="color: black">
+            Total Amount <br />
+            Consumed
+          </th>
+          <th style="color: black">Balance</th>
+          <th style="color: black">Status</th>
+          <!-- <th style="color: black">Revenue Recognised</th> -->
+        </thead>
+
+        <tbody>
+          {% for contract in contracts %}
+          <tr>
+            <td>{{contract.contract_name}}</td>
+            <td><a href="{{contract.contract_acronym}}">{{contract.contract_acronym}}</a></td>
+            <td>{{contract.contract_type}}</td>
+            <td>{{contract.FTE_count}}</td>
+            <td>{{contract.total_contract_value}}</td>
+            <td id="date-cell">{{contract.start_date}}</td>
+            <td id="date-cell">{{contract.end_date}}</td>
+            <td>{{contract.total_amount_consumed}}</td>
+            <td>{{contract.balance}}</td>
+            <td>{{contract.status}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+
+        <!-- <tbody style="color: white;">
+        {% for key,value in reatt.items %}
+        <tr
+          {% if value != retae|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% elif reatt_working|get_item:key != retae_working|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% elif reatt_leaves|get_item:key != retae_leaves|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% endif %}
+        >
+        commented
+        <tr
+          {% if value != retae|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% endif %}
+        >
+        commented
+          <td>{{key}}</td>
+          <td>{{value}}</td>
+          <td>{{reatt_working|get_item:key}}</td>
+          <td>{{reatt_leaves|get_item:key}}</td>
+          <td>{{retae|get_item:key}}</td>
+          <td>{{retae_working|get_item:key}}</td>
+          <td>{{retae_leaves|get_item:key}}</td>
+        </tr>
+
+        {% endfor %}
+      </tbody> -->
+      </table>
+    </div>
+
+    <!--<button
+      style="
+        background-color: rgb(255, 172, 172);
+        padding: 7px;
+        border-radius: 5px;
+        margin-right: 30px;
+      "
+    >
+      <a href="/logout/" style="text-decoration: none">Logout</a>-
+    </button>-->
+    <script>
+      /*let yr = {{year}}
+      let mn = Number("{{month}}")
+      $("#year").val(yr)
+      $("#month").val(mn)
+      $("#check").click(function(){
+        let yr = $("#year").val()
+        let mn = $("#month").val()
+        window.location.href = "{% url 'reconTAE' year=9999 month=99 %}".replace("9999",yr).replace("99",mn)
+      })*/
+
+      function openAddContractPage() {
+        window.location.href = "{% url 'saveContract' %}";
+      }
+
+      function openEditContractPage() {
+        window.location.href = "{% url 'editContracts' %}";
+      }
+
+      function formatDateInTable() {
+        const dateCells = document.querySelectorAll("td#date-cell");
+
+        dateCells.forEach((dateCell) => {
+          const dateText = dateCell.innerText;
+
+          //console.log(dateText);
+
+          const dateParts = dateText.split(".");
+          //console.log(dateParts);
+
+          const monthAbbreviation = dateParts[0];
+          //console.log(monthAbbreviation);
+
+          const sub_date = dateParts[1].split(",");
+          //console.log(sub_date);
+
+          const day = sub_date[0].trim().padStart(2, "0");
+          //console.log(day);
+
+          const year = sub_date[1].trim();
+          //console.log(year);
+
+          const monthNames = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
+          const month = monthNames.indexOf(monthAbbreviation);
+
+          const formattedDate =
+            day + "-" + (month + 1).toString().padStart(2, "0") + "-" + year;
+
+          //console.log(formattedDate);
+
+          dateCell.innerText = formattedDate;
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", formatDateInTable);
+
+      document
+        .getElementById("addContract")
+        .addEventListener("click", openAddContractPage);
+
+      document
+        .getElementById("editContract")
+        .addEventListener("click", openEditContractPage);
+    </script>
+  </body>
+</html>

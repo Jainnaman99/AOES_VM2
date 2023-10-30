@@ -18,6 +18,7 @@ from .forms import TAEUploadMultiForm
 from django.template.defaulttags import register
 from django.views.decorators.cache import never_cache
 from django.db import connection
+from openpyxl import load_workbook
 
 @register.filter
 def get_item(dictionary, key):
@@ -47,28 +48,39 @@ def upload_multiple(request):
             docfiles = request.FILES.getlist('docfile')
             # print(docfiles)
             if form.is_valid():
+                # print(docfiles)
                 for f in docfiles:
+                    # f.protection.disable()
                     newdoc = TAESheet(docfile=f)
+
+                    # print("ok here")
                     if not f.name.endswith('xlsx'):
-                        # print("inside EXCELDATA ends with xlsx")
+                        print("inside EXCELDATA ends with xlsx")
                         return render(request, 'MultiTAE.html', {'isValid': False, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
+                    # else:
+                    
                     newdoc.save()
                 # context = {'msg' : '<span style="color: green;">File successfully uploaded</span>'}
                 # return render(request, "MultiTAE.html", context)
     # =====================================================================================================
                 path = str(base_dir) + "/media/documents/TAE"
                 file_list = glob.glob(path+"/*.xlsx")
+                
 
                 excl_list = []
-
+                # print(file_list)
                 for file in file_list:
+                    # print("ok")
                     excl_list.append(pd.read_excel(file))
+                    # print("ok")
 
                 # excl_merged = pd.DataFrame()
 
                 # for excl_file in excl_list:
                 #     excl_merged = excl_merged.append(excl_file, ignore_index=True)
+                # print(excl_list)
                 excl_merged = pd.concat(excl_list, ignore_index=True)
+                
 
                 excl_merged.to_excel(
                     str(base_dir)+"/media/TAE_Merged.xlsx", index=False)
@@ -127,7 +139,11 @@ def upload_multiple(request):
             else:
                 return render(request, 'MultiTAE.html', {'isValid': False, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
         except Exception as e :
-            # print("In except block",e)
+            print("In except block",e)
+            files = TAESheet.objects.all()
+            for file in files:
+                file.docfile.delete()
+                file.delete()
             # template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             # print(template.format(type(e).__name__, e.args))
             return render(request, 'MultiTAE.html', {'isValid': False, 'role': "user" if (request.user.appusers.roles.filter(name="User").exists()) else "admin"})
@@ -225,99 +241,225 @@ def summaryTAE(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def reconTAE(request, year, month):
- if request.user.is_authenticated:
-    res = Resource.objects.distinct()
+    if request.user.is_authenticated:
+        res = Resource.objects.distinct()
 
-    yr = str(year)
-    if month < 10:
-        mn = "0"+str(month)
-    else:
-        mn = str(month)
-
-    reatt_working = {}
-    reatt_leaves = {}
-    retae_working = {}
-    retae_leaves = {}
-    reatt = {}
-    retae = {}
-    
-	
-    for tae in MasterTAE.objects.raw(
-            f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where (activity not like "Leave%"' +
-
-            f'and activity not like "Sick%"' +
-
-            f'and activity not like "Comp%"' +
-
-            f'and activity not like "Holiday") and Date like "{yr}-{mn}%" group by 2'):
-        for r in res:
-            user_name = tae.User_Name
-            total_hrs = tae.Total_Sum
-            # user_name = user_name.split(", ")
-            # user_name = user_name[1] + ' ' + user_name[0]
-            if r.EmpName == user_name:
-                th = int(total_hrs/8)
-                retae_working[user_name] = th
-
-    for tae in MasterTAE.objects.raw(
-
-            f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where (activity like "Leave%"' +
-
-            f'or activity like "Sick%"' +
-
-            f'or activity like "Comp%"' +
-
-            f'or activity like "Holiday") and Date like "{yr}-{mn}%" group by 2'):
-        for r in res:
-            user_name = tae.User_Name
-            total_hrs = tae.Total_Sum
-            user_name = user_name.split(", ")
-            user_name = user_name[1] + ' ' + user_name[0]
-            if r.EmpName == user_name:
-                th = int(total_hrs/8)
-                retae_leaves[user_name] = th
-
-    for key, value in retae_working.items():
-        rel = retae_leaves.get(key)
-        if not rel:
-            retae[key] = value
+        yr = str(year)
+        selected_activities = []
+        if month < 10:
+            mn = "0"+str(month)
         else:
-            retae[key] = value + rel
+            mn = str(month)
+        activities_set = MasterTAE.objects.values_list('Activity').distinct()
+        activities = list(activities_set)
+        activities.sort()
+        # print(activities)
 
-    for tim in Attendance.objects.raw(
-            # f"select distinct id, EmpCode, count(Status) as Attendance from TimeEntry_attendance where Status = 'W' and Date like '%{month}-{yr}%' group by 2"):
-            f"select distinct id, EmpCode, count(Status) as Attendance from TimeEntry_attendance where (Status like 'C' or  Status = 'W') and Date like '%{month}-{yr}%' group by 2"):
-        for r in res:
-            emp_code = str(tim.EmpCode)
-            if str(r.EmpCode) == emp_code:
-                ta = tim.Attendance
-                reatt_working[r.EmpName] = ta
+        my_activities = []
+        # print('my print: ',activities)
+        for i in activities:
+            my_activities.append(i[0])
+        # my_activities.remove("Holiday")
+        # my_activities.remove("Leave")
+        # my_activities.remove("Leave of Absence")
+        # my_activities.remove("Sick")
+        if request.method == 'POST':
+            # print(str(request.POST))
+            for i in request.POST.getlist('activities'):
+                selected_activities.append(i)
+            # print(len(selected_activities))
+                # print(type(i))
+        # for _ in activities:
+        #     print(type(_))
+        # out_list = []
+        # out_list = [re.sub('[^a-zA-Z0-9]+','', _) for _ in my_activities]
+        # print(out_list)
+        # l = ['(',')',',',"'"]
+        # out_list = []
+        # for x in activities:
+        #     for y in l:
+        #         if y in x:
+        #             x = x.replace(y,'')
+        #             out_list.append(x)
+        #             print(out_list)
+        #             break
+        
+        # print(activities)
+        # print(len(activities))
+        # print(activities)
+        reatt_working = {}
+        reatt_leaves = {}
+        retae_working = {}
+        retae_leaves = {}
+        reatt = {}
+        retae = {}
+        total_hrs = 0
+        # print(len(selected_activities))
+        # query_list = 'activity = '+selected_activities[]
+        # for i in range(1, len(selected_activities)):
+        #     query_list += ' or activity = '+selected_activities[i]
+        # print(query_list)
+        # for tae in MasterTAE.objects.raw(
+        #     f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where activity = "{i}" and Date like "{yr}-{mn}%" group by 2'):
+        #     for r in res:
+        #         user_name = tae.User_Name
+        #         total_hrs = tae.Total_Sum
+        #         # user_name = user_name.split(", ")
+        #         # user_name = user_name[1] + ' ' + user_name[0]
+        #         if r.EmpName == user_name:
+        #             th = int(total_hrs/8)
+        #             retae_working[user_name] = th
 
-    for tim in Attendance.objects.raw(
-            # f"select distinct id, EmpCode, count(Status) as Attendance from TimeEntry_attendance where (Status like 'CO%' or Status like 'L') and Date like '%{str(month)}-{str(yr)}%' group by 2"):
-            f"select distinct id, EmpCode, count(Status) as Attendance from TimeEntry_attendance where (Status like 'L') and Date like '%{str(month)}-{str(yr)}%' group by 2"):
-        for r in res:
-            emp_code = str(tim.EmpCode)
-            if str(r.EmpCode) == emp_code:
-                ta = tim.Attendance
-                reatt_leaves[r.EmpName] = ta
+        
+        for tae in MasterTAE.objects.raw(
+                f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where (activity not like "Leave%"' +
+
+                f'and activity not like "Sick%"' +
+
+                f'and activity not like "Holiday") and Date like "{yr}-{mn}%" group by 2'):
+            for r in res:
+                user_name = tae.User_Name
+                total_hrs = tae.Total_Sum
+                # user_name = user_name.split(", ")
+                # user_name = user_name[1] + ' ' + user_name[0]
+                if r.EmpName == user_name:
+                    th = int(total_hrs/8)
+                    retae_working[user_name] = th
+
+        for tae in MasterTAE.objects.raw(
+
+                f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where (activity like "Leave%"' +
+
+                f'or activity like "Sick%"' +
+
+                f'or activity like "Holiday") and Date like "{yr}-{mn}%" group by 2'):
+            for r in res:
+                user_name = tae.User_Name
+                total_hrs = tae.Total_Sum
+                # user_name = user_name.split(", ")
+                # user_name = user_name[1] + ' ' + user_name[0]
+                if r.EmpName == user_name:
+                    th = int(total_hrs/8)
+                    retae_leaves[user_name] = th
+
+        for key, value in retae_working.items():
+            # print(retae_leaves.get(key), retae_leaves.get(value))
             
-    for key, value in reatt_working.items():
-        rel = reatt_leaves.get(key)
-        if not rel:
-            reatt[key] = value
-        else:
-            reatt[key] = value + rel
+            rel = retae_leaves.get(key)
+            if not rel:
+                retae[key] = value
+            else:
+                retae[key] = value + rel
 
-    context = {'retae_working': retae_working,
-                'retae_leaves': retae_leaves,
-                'reatt_working': reatt_working,
-                'reatt_leaves': reatt_leaves,
-                'reatt' : reatt,
-                'retae' : retae,
-                'year': year,
-                'month': month}
- else:
-    return redirect('login')
- return render(request, "reconciliation.html", context)
+        if (len(selected_activities)!=0):
+            # for tae in MasterTAE.objects.raw(
+            #         f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where (activity not like "Leave%"' +
 
+            #         f'and activity not like "Sick%"' +
+
+            #         f'and activity not like "Holiday") and Date like "{yr}-{mn}%" group by 2'):
+            #     for r in res:
+            #         user_name = tae.User_Name
+            #         total_hrs = tae.Total_Sum
+            #         # user_name = user_name.split(", ")
+            #         # user_name = user_name[1] + ' ' + user_name[0]
+            #         if r.EmpName == user_name:
+            #             th = int(total_hrs/8)
+            #             retae_working[user_name] = th
+            # print(len(selected_activities))
+            query_list = 'activity = "'+selected_activities[0]+'"'
+            for i in range(1, len(selected_activities)):
+                query_list += ' or activity = "'+selected_activities[i]+'"'
+            # print(query_list)
+            # print(yr,mn)
+            query_string = f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where ('+query_list+') and Date like "'+yr+'-'+mn+'%" group by 2'
+            # print(query_string)
+            names = []
+            for tae in MasterTAE.objects.raw(query_string):
+                # print("OK")
+                
+                for r in res:
+                    user_name = tae.User_Name
+                    total_hrs = tae.Total_Sum
+                    
+
+                    # print(retae_working)
+                    # print(tae.User_Name)
+                    # user_name = user_name.split(", ")
+                    # user_name = user_name[1] + ' ' + user_name[0]
+                    if r.EmpName == user_name:
+                        # print(names)
+                        if user_name not in names :
+                            names.append(user_name)
+                        print(names)
+                        th = int(total_hrs/8)
+                        retae_working[r.EmpName] = th
+
+                    if r.EmpName not in names:
+                        retae_working[r.EmpName] = 0
+                    # else :
+                    #     # print(user_name)
+                    #     retae_working[r.EmpName] = 0
+        # for tae in MasterTAE.objects.raw(
+
+        #         f'select distinct id, User_Name, sum(Total_Hrs) as Total_Sum from TAE_mastertae where (activity like "Leave%"' +
+
+        #         f'or activity like "Sick%"' +
+
+        #         f'or activity like "Holiday") and Date like "{yr}-{mn}%" group by 2'):
+        #     for r in res:
+        #         user_name = tae.User_Name
+        #         total_hrs = tae.Total_Sum
+        #         # user_name = user_name.split(", ")
+        #         # user_name = user_name[1] + ' ' + user_name[0]
+        #         if r.EmpName == user_name:
+        #             th = int(total_hrs/8)
+        #             retae_leaves[user_name] = th
+        # print(retae)
+        # for key, value in retae_working.items():
+        #     # print(retae_leaves.get(key), retae_leaves.get(value))
+            
+        #     rel = retae_leaves.get(key)
+        #     if not rel:
+        #         retae[key] = value
+        #     else:
+        #         retae[key] = value + rel
+
+        for tim in Attendance.objects.raw(
+                f"select distinct id, EmpCode, count(Status) as Attendance from TimeEntry_attendance where (Status like 'C' or  Status = 'W') and Date like '%{month}-{yr}%' group by 2"):
+            for r in res:
+                emp_code = str(tim.EmpCode)
+                # print(emp_code+count(Status))
+                if str(r.EmpCode) == emp_code:
+                    # print(emp_code+"="+str(tim.Attendance))
+                    ta = tim.Attendance
+                    reatt_working[r.EmpName] = ta
+
+        for tim in Attendance.objects.raw(
+                f"select distinct id, EmpCode, count(Status) as Attendance from TimeEntry_attendance where (Status like 'L') and Date like '%{str(month)}-{str(yr)}%' group by 2"):
+            for r in res:
+                emp_code = str(tim.EmpCode)
+                if str(r.EmpCode) == emp_code:
+                    # print(emp_code+"="+str(tim.Attendance))
+                    ta = tim.Attendance
+                    reatt_leaves[r.EmpName] = ta
+
+        for key, value in reatt_working.items():
+            rel = reatt_leaves.get(key)
+            if not rel:
+                reatt[key] = value
+            else:
+                reatt[key] = value + rel
+
+        context = {'retae_working': retae_working,
+                   'retae_leaves': retae_leaves,
+                   'reatt_working': reatt_working,
+                   'reatt_leaves': reatt_leaves,
+                   'reatt': reatt,
+                   'retae': retae,
+                   'year': year,
+                   'month': month,
+                   'activities':my_activities}
+    else:
+        return redirect('login')
+    return render(request, "reconciliation.html", context)

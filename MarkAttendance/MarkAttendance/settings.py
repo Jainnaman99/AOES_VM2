@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'Onboarding',
     'TAE',
     'TimeEntry',
-    'Authentication'
+    'Authentication',
+    'Contracts'
 ]
 
 MIDDLEWARE = [

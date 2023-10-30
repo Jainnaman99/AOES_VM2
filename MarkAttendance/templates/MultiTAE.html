@@ -76,9 +76,9 @@
 			<fieldset name="Multiple Files Upload">
 				{% if msg %} {% autoescape off %} {{ msg }} {% endautoescape %} {% endif %}
 				<div id="invalid_file_error">
-					{% if isValid == False%}
+					{% if isValid == False %}
 					"Enter Valid Files"
-					{% endif%}
+					{% endif %}
 				</div>
 				<form method="post" enctype="multipart/form-data" class="container">
 					{% csrf_token %}

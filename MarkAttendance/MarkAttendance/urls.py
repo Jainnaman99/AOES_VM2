@@ -21,5 +21,6 @@ urlpatterns = [
     path("onboarding/", include('Onboarding.urls')),
     path("TAE/", include('TAE.urls')),
     path("TimeEntry/", include('TimeEntry.urls')),
-    path('', include('Authentication.urls'))
+    path('', include('Authentication.urls')),
+    path('Contracts/', include('Contracts.urls'))
 ]

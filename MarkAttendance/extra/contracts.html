@@ -1,0 +1,279 @@
+{% include 'base1.html'%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contracts</title>
+    <script src="    https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <style>
+      body {
+        background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      .table {
+        padding: 10px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      th,
+      td {
+        padding: 0.8rem;
+        padding-right: 20px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        border-left: 1px solid #000000;
+        border-right: 1px solid #000000;
+      }
+
+      tr {
+        border-bottom: 1px solid #ddd;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 20px;
+        text-align: center;
+        display: block;
+      }
+
+      .dropdown-container {
+        flex: 1;
+        display: inline-block;
+      }
+
+      #month,
+      #year {
+        padding: 8px;
+        margin: 5px;
+        width: 150px;
+      }
+
+      #addContract{
+        width: 150px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+
+      .input-container{
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .text-input{
+        width: 150px;
+        padding: 6px;
+        margin: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .date-input{
+        width: 150px;
+        padding: 6px;
+        margin: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .dropdown{
+        padding: 6px;
+        margin: 5px 0px;
+        width: 150px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+      }
+
+      .dropdown option{
+        font-size: 14px;
+      }
+
+      label{
+        font-size: 14px;
+        color: #ffffff;
+        padding-left: 15px;
+        padding-right: 4px;
+      }
+
+      .row{
+        margin-bottom: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="table">
+
+      <div class="input-container container">
+
+        <div class="row justify-content-between">
+            <label for="contract-name">Contract Name</label>
+            <input
+            type="text"
+            id = "contract-name"
+            class="text-input col-6"
+            placeholder="Contract Name"
+            />
+
+            <label for="contract-value">Contract Value</label>
+            <input
+            type="text"
+            id="contract-value"
+            class="text-input col-6"
+            placeholder="Contract Value"
+            />
+
+            <label for="month-estimation">Month Estimation</label>
+            <input
+            type="text"
+            id="month-estimation"
+            class="text-input col-6"
+            placeholder="Monthly Estimation"
+            />
+
+            <label for="monthly-cost">Monthly Cost</label>
+            <input
+            type="text"
+            id="monthly-cost"
+            class="text-input col-6"
+            placeholder="Monthly Cost"
+            />
+        </div>
+        
+        <div class="row justify-content-between">
+            <label for="month" style="margin-right: 58px;">Month</label>
+            <select name="month" id="month" class="dropdown col-6">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+
+            <label for="year" style="margin-right: 68px;">Year</label>
+            <select name="year" id="year" class="dropdown col-6">
+                <option value="2023">2023</option>
+                <option value="2023">2024</option>
+                <option value="2023">2025</option>
+                <option value="2023">2026</option>
+                <option value="2023">2027</option>
+                <option value="2023">2028</option>
+                <option value="2023">2029</option>
+                <option value="2023">2030</option>
+            </select>
+
+            <label for="start-date" style="margin-right: 51px;">Start Date</label>
+            <input type="date" id= "start-date" class="date-input col-6" />
+
+            <label for="end-date" style="margin-right: 28px;">End Date</label>
+            <input type="date" id = "end-date" class="date-input col-6" />
+        </div>
+      </div>
+
+      <!-- <div class="date-select"> -->
+      <div class="button-container">
+        <button
+          id="addContract"
+          style="background-color: #ff4c29; border-color: #ff4c29"
+          class="btn btn-primary"
+        >
+          Add Contract
+        </button>
+      </div>
+      <!-- </div> -->
+
+      <table border="1px solid white;" style="width: 50%" align="center">
+        <thead border="1px solid white;">
+          <th style="color: black">Contract Name</th>
+          <th style="color: black">Contract Value</th>
+          <th style="color: black">Month Estimation</th>
+          <th style="color: black">Monthly Cost</th>
+          <th style="color: black">Month</th>
+          <th style="color: black">Year</th>
+          <th style="color: black">Start Date</th>
+          <th style="color: black">End Date</th>
+          <th style="color: black">Balance</th>
+          
+        </thead>
+        <!-- <tbody style="color: white;">
+        {% for key,value in reatt.items %}
+        <tr
+          {% if value != retae|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% elif reatt_working|get_item:key != retae_working|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% elif reatt_leaves|get_item:key != retae_leaves|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% endif %}
+        >
+        commented
+        <tr
+          {% if value != retae|get_item:key %}
+            style="background-color: rgb(255, 172, 172); color: black;"
+          {% endif %}
+        >
+        commented
+          <td>{{key}}</td>
+          <td>{{value}}</td>
+          <td>{{reatt_working|get_item:key}}</td>
+          <td>{{reatt_leaves|get_item:key}}</td>
+          <td>{{retae|get_item:key}}</td>
+          <td>{{retae_working|get_item:key}}</td>
+          <td>{{retae_leaves|get_item:key}}</td>
+        </tr>
+
+        {% endfor %}
+      </tbody> -->
+      </table>
+    </div>
+
+    <!--<button
+      style="
+        background-color: rgb(255, 172, 172);
+        padding: 7px;
+        border-radius: 5px;
+        margin-right: 30px;
+      "
+    >
+      <a href="/logout/" style="text-decoration: none">Logout</a>-
+    </button>-->
+    <!-- <script>
+      let yr = {{year}}
+      let mn = Number("{{month}}")
+      $("#year").val(yr)
+      $("#month").val(mn)
+      $("#check").click(function(){
+        let yr = $("#year").val()
+        let mn = $("#month").val()
+        window.location.href = "{% url 'reconTAE' year=9999 month=99 %}".replace("9999",yr).replace("99",mn)
+      })
+    </script> -->
+  </body>
+</html>

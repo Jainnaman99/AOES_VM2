@@ -1,0 +1,402 @@
+{% include 'base1.html'%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Contract</title>
+    <script src="    https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <style>
+      body {
+        background-image: url("https://wallpaperaccess.com/full/1397765.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+        display: block;
+      }
+
+      /* .dropdown-container {
+        flex: 1;
+        display: inline-block;
+      } */
+
+      /* #month,
+      #year {
+        padding: 8px;
+        margin: 5px;
+        width: 150px;
+      } */
+
+      #editContract {
+        width: 180px;
+        margin: 10px;
+        margin-top: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 5px;
+      }
+
+      /* 
+      .input-container {
+        display: flex;
+        flex-wrap: wrap;
+        background-color: #222222;
+        flex-direction: column;
+        align-items: center;
+        border-radius: 20px;
+        width: 35%;
+        padding: 38px;
+      } */
+
+      /* .input-container > div {
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow-wrap: break-word;
+      } */
+
+      .text-input {
+        border-radius: 5px;
+        width: 90%;
+        padding: 6px;
+        border: 1px solid #ccc;
+        align-self: self-start;
+      }
+
+      .date-input {
+        border-radius: 5px;
+        width: 90%;
+        padding: 6px;
+        border: 1px solid #ccc;
+        align-self: self-start;
+      }
+
+      .dropdown {
+        border-radius: 5px;
+        padding: 7.5px;
+        width: 90%;
+        border: 1.5px solid #ccc;
+        font-size: 14px;
+        align-self: self-start;
+      }
+
+      select.form-select {
+        -webkit-appearance: menulist;
+      }
+
+      .dropdown option {
+        font-size: 14px;
+      }
+
+      label {
+        font-size: 15px;
+        color: #ffffff;
+        line-height: 2px;
+        margin: 12px 0;
+        /* padding-left: 15px; */
+        padding-right: 4px;
+        align-self: self-start;
+      }
+
+      .row {
+        margin-bottom: 13px;
+      }
+
+      h2 {
+        text-align: center;
+        color: #ffffff;
+        margin: 23px;
+      }
+
+      .grid-container {
+        width: 80%;
+        margin: 0 auto;
+      }
+
+      .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        padding-top: 2px;
+        width: 100%;
+        margin: 0 auto;
+        margin-top: 0px;
+        background-color: #222222;
+        box-shadow: 0 0 10px #ffffff;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        width: calc(100% / 3 - 15px);
+        margin-bottom: 10px;
+        margin-left: 15px;
+        align-items: center;
+      }
+
+      input {
+        padding: 5px;
+      }
+
+      select {
+        background-color: #f4f4f4;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 3px;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+      }
+
+      select option {
+        background-color: white;
+        color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grid-container">
+      <div class="card">
+        <h2>Edit Contract Details</h2>
+        <!-- <div class="row justify-content-between"> -->
+        <form method="post" action="">
+          {%csrf_token%}
+          <div
+            style="display: flex; justify-content: space-between; margin: 10px"
+          >
+            <div class="input-group">
+              <label for="contract-name" >Contract Name</label>
+              <input
+                type="text"
+                id="contract-name"
+                value="{{contract_name}}"
+                class="text-input col-6"
+                placeholder="Contract Name"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="contract-acronym">Contract Acronym</label>
+              <input
+                type="text"
+                id="contract-acronym"
+                value="{{contract_acronym}}"
+                class="text-input col-6"
+                placeholder="Contract Acronym"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="contract-type">Contract Type</label>
+              <select
+                name="contract-type"
+                id="contract-type"
+                value="{{contract_type}}"
+                class="dropdown col-6 form-select"
+                required
+              >
+                <option selected value="">Select Contract Type</option>
+                <option value="T&M Price">T&M Price</option>
+                <option value="Fixed Price">Fixed Price</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="fte-count">FTE Count</label>
+              <input
+                type="text"
+                id="fte-count"
+                value="{{FTE_count}}"
+                class="text-input col-6"
+                placeholder="FTE Count"
+                required
+              />
+            </div>
+          </div>
+
+          <div
+            style="display: flex; justify-content: space-between; margin: 10px"
+          >
+            <div class="input-group">
+              <label for="total-contract-value">Total Contract Value</label>
+              <input
+                type="text"
+                id="total-contract-value"
+                value="{{total_contract_value}}"
+                class="text-input col-6"
+                placeholder="Total Contract Value"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="revenue-projection">Revenue Projection</label>
+              <input
+                type="text"
+                id="revenue-projection"
+                value="{{revenue_projection}}"
+                class="text-input col-6"
+                placeholder="Revenue Projection"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="revenue-recognised">Revenue Recognised</label>
+              <input
+                type="text"
+                id="revenue-recognised"
+                class="text-input col-6"
+                value="{{revenue_recognised}}"
+                placeholder="Revenue Recognised"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="start-date">Start Date</label>
+              <input
+                type="date"
+                id="start-date"
+                value="{{start_date}}"
+                class="date-input col-6"
+                required
+              />
+            </div>
+          </div>
+
+          <div
+            style="display: flex; justify-content: space-between; margin: 10px"
+          >
+            <div class="input-group">
+              <label for="end-date">End Date</label>
+              <input
+                type="date"
+                id="end-date"
+                value="{{end_date}}"
+                class="date-input col-6"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="status">Status</label>
+              <select
+                name="status"
+                id="status"
+                value="{{status}}"
+                class="dropdown col-6 form-select"
+                required
+              >
+                <option selected value="">Select Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div class="input-group"></div>
+
+            <div class="input-group"></div>
+          </div>
+
+          <div class="button-container">
+            <button
+              type="submit"
+              id="editContract"
+              style="background-color: #ff4c29; border-color: #ff4c29"
+              class="btn btn-primary"
+            >
+              Update Contract
+            </button>
+          </div>
+
+          <!-- <label for="revenue-projection" >Revenue<br>Projection</label>
+          <input
+            type="text"
+            id="revenue-projection"
+            class="text-input col-6"
+            placeholder="Revenue Projection"
+          /> -->
+
+          <!-- <label for="start-date" style="margin-right: 34px">Start Date</label>
+          <input type="date" id="start-date" class="date-input col-6" />
+
+          <label for="end-date" style="margin-right: 37px">End Date</label>
+          <input type="date" id="end-date" class="date-input col-6" /> -->
+          <!-- </div> -->
+
+          <!-- <div class="row justify-content-between"> -->
+          <!-- <label for="month" style="margin-right: 58px;">Month</label>
+            <select name="month" id="month" class="dropdown col-6">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+
+            <label for="year" style="margin-right: 68px;">Year</label>
+            <select name="year" id="year" class="dropdown col-6">
+                <option value="2023">2023</option>
+                <option value="2023">2024</option>
+                <option value="2023">2025</option>
+                <option value="2023">2026</option>
+                <option value="2023">2027</option>
+                <option value="2023">2028</option>
+                <option value="2023">2029</option>
+                <option value="2023">2030</option>
+            </select> -->
+          <!-- </div> -->
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function disableFTE() {
+        if (dropdown.value === "Fixed Price") {
+          textField.setAttribute("disabled", "disabled");
+        } else {
+          textField.removeAttribute("disabled");
+        }
+      }
+      const dropdown = document.getElementById("contract-type");
+      const textField = document.getElementById("fte-count");
+      dropdown.addEventListener("change", disableFTE);
+
+      var date = new Date();
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      if (month < 10) month = "0" + month;
+      if (day < 10) day = "0" + day;
+      var today = year + "-" + month + "-" + day;
+      var dayAfterOneMonth = year + "-" + (month + 1) + "-" + day;
+      document.getElementById("start-date").value = today;
+      document.getElementById("end-date").value = dayAfterOneMonth;
+    </script>
+  </body>
+</html>
